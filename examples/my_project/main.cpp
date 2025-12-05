@@ -101,8 +101,7 @@ void epd_update_screen() {
     Serial.println("Updating e-paper display...");
     
     epd_poweron();
-    // No epd_clear() - just draw directly (much faster!)
-    // LVGL redraws the whole screen so we don't need to clear first
+    // No epd_clear() - LVGL redraws all pixels so no ghosting
     
     Rect_t area = {
         .x = 0,
