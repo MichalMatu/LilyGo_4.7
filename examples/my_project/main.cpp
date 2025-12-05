@@ -87,7 +87,8 @@ static void lvgl_flush_cb(lv_disp_drv_t* drv, const lv_area_t* area, lv_color_t*
 // ============================================================================
 
 /**
- * @brief Update the e-paper display (full refresh)
+ * @brief Update the e-paper display (fast refresh without clear)
+ *        For best results, fill framebuffer with 0xFF (white) before drawing
  */
 void epd_update_screen() {
     if (!screen_dirty) return;
@@ -100,7 +101,8 @@ void epd_update_screen() {
     Serial.println("Updating e-paper display...");
     
     epd_poweron();
-    epd_clear();  // Clear screen first to prevent ghosting/darkening
+    // No epd_clear() - just draw directly (much faster!)
+    // LVGL redraws the whole screen so we don't need to clear first
     
     Rect_t area = {
         .x = 0,
@@ -110,7 +112,7 @@ void epd_update_screen() {
     };
     epd_draw_grayscale_image(area, epd_framebuffer);
     
-    epd_poweroff_all();  // Also turns off LEDs
+    epd_poweroff();  // Use poweroff instead of poweroff_all
     
     screen_dirty = false;
     last_update_time = now;
