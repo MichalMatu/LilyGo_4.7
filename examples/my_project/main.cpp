@@ -101,7 +101,7 @@ void epd_update_screen() {
     Serial.println("Updating e-paper display...");
     
     epd_poweron();
-    // No epd_clear() - LVGL redraws all pixels so no ghosting
+    epd_clear();  // Fast clear (1 cycle) before drawing
     
     Rect_t area = {
         .x = 0,
@@ -111,7 +111,7 @@ void epd_update_screen() {
     };
     epd_draw_grayscale_image(area, epd_framebuffer);
     
-    epd_poweroff();  // Use poweroff instead of poweroff_all
+    epd_poweroff();
     
     screen_dirty = false;
     last_update_time = now;
