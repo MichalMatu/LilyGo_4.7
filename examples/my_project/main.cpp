@@ -121,13 +121,13 @@ void epd_update_screen() {
 }
 
 /**
- * @brief Force immediate screen update
+ * @brief Force immediate screen update with full clear (slower, removes ghosting)
  */
 void epd_force_update() {
-    Serial.println("Force updating e-paper display...");
+    Serial.println("Force updating e-paper display (with clear)...");
     
     epd_poweron();
-    epd_clear();
+    epd_clear();  // Full clear - slow but removes ghosting
     
     Rect_t area = {
         .x = 0,
@@ -137,7 +137,7 @@ void epd_force_update() {
     };
     epd_draw_grayscale_image(area, epd_framebuffer);
     
-    epd_poweroff_all();  // Also turns off LEDs
+    epd_poweroff();
     
     screen_dirty = false;
     last_update_time = millis();
@@ -388,12 +388,12 @@ void setup() {
     // Initialize EPD
     Serial.println("Initializing EPD...");
     epd_init();
+    
+    // Clear screen once at startup
     epd_poweron();
     epd_clear();
-    
-    // Turn off LEDs by using epd_poweroff_all() instead of epd_poweroff()
-    epd_poweroff_all();
-    Serial.println("EPD initialized, LEDs turned off!");
+    epd_poweroff();
+    Serial.println("EPD initialized and cleared!");
     
     // Initialize LVGL
     lvgl_init();
@@ -405,12 +405,15 @@ void setup() {
     Serial.println("Creating UI...");
     ui_create();
     
-    // Render and update
+    // Render and draw first frame (screen already cleared in init)
     Serial.println("Rendering UI...");
     lv_timer_handler();
     lv_refr_now(NULL);
     
-    epd_force_update();
+    // Draw first frame (fast, no clear needed - already done)
+    screen_dirty = true;
+    last_update_time = 0;
+    epd_update_screen();
     
     Serial.println("\nSetup complete! Touch the screen to interact.");
 }
