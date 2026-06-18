@@ -30,10 +30,6 @@ void setup() {
     Serial.println("Creating UI...");
     ui_create();
 
-    Serial.println("Rendering UI...");
-    lv_timer_handler();
-    lv_refr_now(NULL);
-
     request_screen_update(true);
     epd_update_screen();
 

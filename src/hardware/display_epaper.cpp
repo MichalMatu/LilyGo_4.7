@@ -58,8 +58,38 @@ static void lvgl_flush_cb(lv_disp_drv_t* drv, const lv_area_t* area, lv_color_t*
         }
     }
 
-    request_screen_update();
+    // App code schedules physical EPD refreshes to skip transient LVGL states.
     lv_disp_flush_ready(drv);
+}
+
+static void draw_full_screen_with_timing(const char* label) {
+    unsigned long start = millis();
+
+    epd_poweron();
+    unsigned long after_poweron = millis();
+
+    epd_clear();
+    unsigned long after_clear = millis();
+
+    Rect_t area = {
+        .x = 0,
+        .y = 0,
+        .width = kDisplayHorRes,
+        .height = kDisplayVerRes
+    };
+    epd_draw_grayscale_image(area, epd_framebuffer);
+    unsigned long after_draw = millis();
+
+    epd_poweroff();
+    unsigned long after_poweroff = millis();
+
+    Serial.printf("%s timing: poweron=%lu ms, clear=%lu ms, draw=%lu ms, poweroff=%lu ms, total=%lu ms\n",
+                  label,
+                  after_poweron - start,
+                  after_clear - after_poweron,
+                  after_draw - after_clear,
+                  after_poweroff - after_draw,
+                  after_poweroff - start);
 }
 
 void epd_display_init() {
@@ -87,19 +117,9 @@ void epd_update_screen() {
 
     Serial.println("Updating e-paper display...");
 
-    epd_poweron();
-    epd_clear();
-
-    Rect_t area = {
-        .x = 0,
-        .y = 0,
-        .width = kDisplayHorRes,
-        .height = kDisplayVerRes
-    };
-    epd_draw_grayscale_image(area, epd_framebuffer);
-
-    epd_poweroff();
-    mark_screen_updated(now);
+    lv_refr_now(NULL);
+    draw_full_screen_with_timing("Update");
+    mark_screen_updated(millis());
 
     Serial.println("Display updated!");
 }
@@ -107,18 +127,7 @@ void epd_update_screen() {
 void epd_force_update() {
     Serial.println("Force updating e-paper display (with clear)...");
 
-    epd_poweron();
-    epd_clear();
-
-    Rect_t area = {
-        .x = 0,
-        .y = 0,
-        .width = kDisplayHorRes,
-        .height = kDisplayVerRes
-    };
-    epd_draw_grayscale_image(area, epd_framebuffer);
-
-    epd_poweroff();
+    draw_full_screen_with_timing("Force update");
     mark_screen_updated(millis());
 
     Serial.println("Display updated!");
