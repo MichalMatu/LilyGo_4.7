@@ -38,19 +38,19 @@ pio run
 ## Upload
 
 ```sh
-pio run -t upload
+pio run -t upload --upload-port /dev/cu.usbmodem101
 ```
 
 ## Serial Monitor
 
 ```sh
-pio device monitor
+pio device monitor --port /dev/cu.usbmodem101
 ```
 
 Default monitor speed is `115200`.
 
 ## Notes
 
-- `platformio.ini` now builds the firmware from `src/` directly.
+- `platformio.ini` builds the firmware from `src/` directly.
 - The original LilyGo driver is isolated in `lib/lilygo_epd/` instead of being mixed with application code.
 - The original sample sketches are not part of the build; they live under `reference/lilygo_examples/`.
