@@ -21,13 +21,10 @@
   "homepage": "https://github.com/Xinyuan-LilyGO/LilyGo-EPD47",
   "export": {
     "include": [
-      "LICENSE",
       "library.json",
       "library.properties",
-      "README.md",
       "keywords.txt",
-      "src/*",
-      "examples/*"
+      "src/*"
     ]
   },
   "dependencies": [
@@ -42,7 +39,6 @@
       "version": "0.1.9"
     }
   ],
-  "examples": ["examples/*/*.ino"],
   "frameworks": ["arduino"],
   "platforms": "esp32",
   "headers": "epd_driver.h"

@@ -16,11 +16,8 @@
 #include <esp_types.h>
 #include <xtensa/core-macros.h>
 
-#include <string.h>
-
-#if ESP_IDF_VERSION_MAJOR >= 5 // IDF 5+ 
 #include <math.h>
-#endif
+#include <string.h>
 
 /******************************************************************************/
 /***        macro definitions                                               ***/
